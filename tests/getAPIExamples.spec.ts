@@ -1,25 +1,47 @@
 import { test, expect } from '@playwright/test';
+import { API_URLS } from '../config';
 
-test('Get Test Tags', async ({ request }) => {
-  const tagsResponse = await request.get('https://conduit-api.bondaracademy.com/api/tags')
-  const tagsResponseJSON = await tagsResponse.json()
+test.describe('API GET Requests', () => {
+    test('should retrieve tags and verify response structure', async ({ request }) => {
+        // ============================================
+        // ШАГ 1: Получение списка тегов
+        // ============================================
+        const tagsResponse = await request.get(API_URLS.TAGS);
+        
+        expect(tagsResponse.status()).toBe(200);
 
-  expect(tagsResponse.status()).toBe(200)
-  expect(tagsResponseJSON.tags[0]).toBe('Test')
-  expect(tagsResponseJSON.tags.length).toBeLessThanOrEqual(10)
+        // ============================================
+        // ШАГ 2: Проверка структуры и содержимого ответа
+        // ============================================
+        const tagsResponseJson = await tagsResponse.json();
+        
+        expect(tagsResponseJson.tags).toBeDefined();
+        expect(Array.isArray(tagsResponseJson.tags)).toBe(true);
+        expect(tagsResponseJson.tags.length).toBeGreaterThan(0);
+        expect(tagsResponseJson.tags[0]).toBe('Test');
+        expect(tagsResponseJson.tags.length).toBeLessThanOrEqual(10);
+    });
 
-  console.log(tagsResponseJSON)
-});
+    test('should retrieve articles list with pagination', async ({ request }) => {
+        // ============================================
+        // ШАГ 1: Получение списка статей с пагинацией
+        // ============================================
+        const limit = 10;
+        const offset = 0;
+        const articlesResponse = await request.get(
+            `${API_URLS.ARTICLES}?limit=${limit}&offset=${offset}`
+        );
+        
+        expect(articlesResponse.status()).toBe(200);
 
-
-
-test('Get all Articles', async ({ request }) => {
-  const articlesResponse = await request.get('https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0')
-  const articlesResponseJSON = await articlesResponse.json()
-
-  expect(articlesResponseJSON.articles.length).toBeLessThanOrEqual(10)
-  expect(articlesResponseJSON.articlesCount).toEqual(10)
-  expect(articlesResponse.status()).toBe(200)  
-
-  console.log(articlesResponseJSON)
+        // ============================================
+        // ШАГ 2: Проверка структуры и содержимого ответа
+        // ============================================
+        const articlesResponseJson = await articlesResponse.json();
+        
+        expect(articlesResponseJson.articles).toBeDefined();
+        expect(Array.isArray(articlesResponseJson.articles)).toBe(true);
+        expect(articlesResponseJson.articles.length).toBeLessThanOrEqual(limit);
+        expect(articlesResponseJson.articlesCount).toBe(limit);
+    });
 });

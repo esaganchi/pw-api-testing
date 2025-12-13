@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { API_URLS } from '../config';
-import { TEST_USERS, TEST_ARTICLE_DATA } from '../config';
+import { TEST_USERS, TEST_ARTICLE_DATA, generateUniqueArticleTitle } from '../config';
 
-test.describe('Article Creation and Retrieval', () => {
-    test('should create a new article and verify it in the articles list', async ({ request }) => {
+test.describe('Article Management', () => {
+    test('should create, verify and delete an article', async ({ request }) => {
         // ============================================
         // ШАГ 1: Аутентификация пользователя
         // ============================================
@@ -27,7 +27,11 @@ test.describe('Article Creation and Retrieval', () => {
         // ============================================
         // ШАГ 2: Создание новой статьи
         // ============================================
-        const articleData = TEST_ARTICLE_DATA.DEFAULT;
+        const uniqueTitle = generateUniqueArticleTitle(TEST_ARTICLE_DATA.DEFAULT.title);
+        const articleData = {
+            ...TEST_ARTICLE_DATA.DEFAULT,
+            title: uniqueTitle
+        };
 
         const createArticleResponse = await request.post(API_URLS.ARTICLES, {
             data: {
@@ -47,7 +51,10 @@ test.describe('Article Creation and Retrieval', () => {
 
         expect(createStatus).toBe(201);
         expect(createArticleJson.article).toBeDefined();
-        expect(createArticleJson.article.title).toBe(articleData.title);
+        expect(createArticleJson.article.title).toBe(uniqueTitle);
+        expect(createArticleJson.article.slug).toBeDefined();
+
+        const articleSlug = createArticleJson.article.slug;
 
         // ============================================
         // ШАГ 3: Проверка создания статьи через GET запрос
@@ -63,7 +70,18 @@ test.describe('Article Creation and Retrieval', () => {
         const articlesJson = await getArticlesResponse.json();
         expect(articlesJson.articles).toBeDefined();
         expect(articlesJson.articles.length).toBeGreaterThan(0);
-        expect(articlesJson.articles[0].title).toBe(articleData.title);
+        expect(articlesJson.articles[0].title).toBe(uniqueTitle);
+
+        // ============================================
+        // ШАГ 4: Удаление созданной статьи
+        // ============================================
+        const deleteArticleResponse = await request.delete(`${API_URLS.ARTICLES}/${articleSlug}`, {
+            headers: {
+                'Authorization': authToken
+            }
+        });
+
+        expect(deleteArticleResponse.status()).toBe(204);
     });
 });
 
