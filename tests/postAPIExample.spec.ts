@@ -51,3 +51,4 @@ test('Create a new Article', async ({ request }) => {
     expect(articleResponseGET.status()).toEqual(200)
     expect(ArticleResponseJSON.articles[0].title).toEqual('Article Three')
 });
+
