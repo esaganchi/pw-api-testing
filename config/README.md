@@ -5,12 +5,15 @@ This directory contains centralized configuration files for the Playwright test 
 ## Structure
 
 ### `api.config.ts`
+
 Contains all API-related configuration:
+
 - Base URLs
 - API endpoints
 - Helper functions for building API URLs
 
 **Usage:**
+
 ```typescript
 import { API_URLS, API_CONFIG } from '../config';
 
@@ -22,12 +25,15 @@ const customUrl = getApiUrl('/custom/endpoint');
 ```
 
 ### `test-data.config.ts`
+
 Contains test data including:
+
 - Test user credentials
 - Sample article data
 - Helper functions for generating test data
 
 **Usage:**
+
 ```typescript
 import { TEST_USERS, TEST_ARTICLE_DATA, generateUniqueArticleTitle } from '../config';
 
@@ -42,7 +48,9 @@ const uniqueTitle = generateUniqueArticleTitle('My Article');
 ```
 
 ### `index.ts`
+
 Central export point for all configuration files. Import everything from here:
+
 ```typescript
 import { API_URLS, TEST_USERS, TEST_ARTICLE_DATA } from '../config';
 ```

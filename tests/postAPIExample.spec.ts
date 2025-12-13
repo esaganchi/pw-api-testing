@@ -11,17 +11,17 @@ test.describe('Article Creation and Retrieval', () => {
             data: {
                 user: {
                     email: TEST_USERS.DEFAULT.email,
-                    password: TEST_USERS.DEFAULT.password
-                }
-            }
+                    password: TEST_USERS.DEFAULT.password,
+                },
+            },
         });
 
         expect(loginResponse.status()).toBe(200);
-        
+
         const loginResponseJson = await loginResponse.json();
         expect(loginResponseJson.user).toBeDefined();
         expect(loginResponseJson.user.token).toBeDefined();
-        
+
         const authToken = `Token ${loginResponseJson.user.token}`;
 
         // ============================================
@@ -31,11 +31,11 @@ test.describe('Article Creation and Retrieval', () => {
 
         const createArticleResponse = await request.post(API_URLS.ARTICLES, {
             data: {
-                article: articleData
+                article: articleData,
             },
             headers: {
-                'Authorization': authToken
-            }
+                Authorization: authToken,
+            },
         });
 
         const createStatus = createArticleResponse.status();
@@ -54,8 +54,8 @@ test.describe('Article Creation and Retrieval', () => {
         // ============================================
         const getArticlesResponse = await request.get(`${API_URLS.ARTICLES}/?limit=10&offset=0`, {
             headers: {
-                'Authorization': authToken
-            }
+                Authorization: authToken,
+            },
         });
 
         expect(getArticlesResponse.status()).toBe(200);
@@ -66,4 +66,3 @@ test.describe('Article Creation and Retrieval', () => {
         expect(articlesJson.articles[0].title).toBe(articleData.title);
     });
 });
-

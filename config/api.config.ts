@@ -5,7 +5,7 @@
 
 export const API_CONFIG = {
     BASE_URL: 'https://conduit-api.bondaracademy.com/api',
-    
+
     ENDPOINTS: {
         LOGIN: '/users/login',
         ARTICLES: '/articles',
