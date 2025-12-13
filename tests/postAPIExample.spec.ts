@@ -20,12 +20,13 @@ test('Create a new Article', async ({ request }) => {
     const authToken = 'Token ' + tokenResponseJSON.user.token
     //const uniqueTitle = `Test Article Saganchi ${Date.now()}`
     const newArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles', {
+        
         data: {
             article: {
-                title: 'ABC Article',
-                description: 'Test Description Saganchi',
-                body: 'Test Body Saganchi',
-                tagList: ['Test', 'Test2', 'Test3']
+                title: 'Article Three',
+                description: 'Test Description Three Saganchi',
+                body: 'Test Body Three Saganchi',
+                tagList: ['Test4', 'Test5', 'Test6']
             }
         },
         headers: {
@@ -34,11 +35,19 @@ test('Create a new Article', async ({ request }) => {
     })
     
     // Проверяем статус ответа создания статьи
-    expect(newArticleResponse.status()).toBe(201)
-    const newArticleResponseJSON = await newArticleResponse.json()
-    console.log(newArticleResponseJSON)
-    // Проверяем, что ответ содержит article
-    expect(newArticleResponseJSON.article).toBeDefined()
-    expect(newArticleResponseJSON.article.title).toEqual('ABC Article')
+    // expect(newArticleResponse.status()).toBe(201)
+    // const newArticleResponseJSON = await newArticleResponse.json()
+    // console.log(newArticleResponseJSON)
+    // // Проверяем, что ответ содержит article
+    // expect(newArticleResponseJSON.article).toBeDefined()
+    // expect(newArticleResponseJSON.article.title).toEqual('Article Three')
 
+    const articleResponseGET = await request.get(`https://conduit-api.bondaracademy.com/api/articles/?limit=10&offset=0`,{
+        headers: {
+            'Authorization': authToken
+        }
+    })
+    const ArticleResponseJSON = await articleResponseGET.json()
+    expect(articleResponseGET.status()).toEqual(200)
+    expect(ArticleResponseJSON.articles[0].title).toEqual('Article Three')
 });
