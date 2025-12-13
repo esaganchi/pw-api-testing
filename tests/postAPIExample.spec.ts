@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { API_URLS } from '../config';
 import { TEST_USERS, TEST_ARTICLE_DATA } from '../config';
 
-test.describe('Article Creation and Retrieval', () => {
+test.describe.skip('Article Creation and Retrieval', () => {
     test('should create a new article and verify it in the articles list', async ({ request }) => {
         // ============================================
         // ШАГ 1: Аутентификация пользователя

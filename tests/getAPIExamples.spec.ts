@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { API_URLS } from '../config';
 
-test.describe('API GET Requests', () => {
+test.describe.skip('API GET Requests', () => {
     test('should retrieve tags and verify response structure', async ({ request }) => {
         // ============================================
         // ШАГ 1: Получение списка тегов

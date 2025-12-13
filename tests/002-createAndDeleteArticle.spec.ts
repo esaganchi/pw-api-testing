@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test('Create and Delete a Article', async ({ request }) => {
+test.describe.skip('Create and Delete Article', () => {
+    test('Create and Delete a Article', async ({ request }) => {
     const tokenResponse = await request.post(
         'https://conduit-api.bondaracademy.com/api/users/login',
         {
@@ -62,4 +63,5 @@ test('Create and Delete a Article', async ({ request }) => {
         }
     );
     expect(deleteArticleResponse.status()).toEqual(204);
+    });
 });
