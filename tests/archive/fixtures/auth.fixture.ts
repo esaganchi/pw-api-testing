@@ -4,8 +4,8 @@
  */
 
 import { test as base } from '@playwright/test';
-import { API_URLS } from '../config/api.config';
-import { TEST_USERS } from '../config/test-data.config';
+import { API_URLS } from '../../../config/api.config';
+import { TEST_USERS } from '../../../config/test-data.config';
 
 type AuthFixtures = {
     authenticatedRequest: {
