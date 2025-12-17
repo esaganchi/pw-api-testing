@@ -1,8 +1,10 @@
 import { APIRequestContext } from '@playwright/test';
-import {expect} from '@playwright/test';
+import { expect } from '@playwright/test';
+import { APILogger } from './logger';
 
 export class RequestHandler {
   private request: APIRequestContext;
+  private logger: APILogger;
   private baseUrl: string;
   private defaultBaseUrl: string;
   private apiPath: string = '';
@@ -10,9 +12,10 @@ export class RequestHandler {
   private apiHeaders: Record<string, string> = {};
   private apiBody: object = {};
 
-  constructor(request: APIRequestContext, apiBaseUrl: string) {
+  constructor(request: APIRequestContext, apiBaseUrl: string, logger: APILogger) {
     this.request = request;
     this.defaultBaseUrl = apiBaseUrl;
+    this.logger = logger;
   }
 
   url(url: string) {
@@ -42,55 +45,75 @@ export class RequestHandler {
 
   async getRequest(statusCode: number) {
     const url = this.getUrl();
+    this.logger.logRequest('GET', url, this.apiHeaders);
     const response = await this.request.get(url, {
-      headers: this.apiHeaders
+      headers: this.apiHeaders,
     });
-    expect(response.status()).toBe(statusCode);
+    const actualStatus = response.status();
     const responseJSON = await response.json();
+    this.logger.logResponse(actualStatus, responseJSON);
+    this.statusCodeValidator(actualStatus, statusCode, this.getRequest);
 
     return responseJSON;
   }
 
   async postRequest(statusCode: number) {
     const url = this.getUrl();
+    this.logger.logRequest('POST', url, this.apiHeaders, this.apiBody);
     const response = await this.request.post(url, {
       headers: this.apiHeaders,
       data: this.apiBody,
     });
-  
-    expect(response.status()).toEqual(statusCode);
+    const actualStatus = response.status();
     const responseJSON = await response.json();
-  
+    this.logger.logResponse(actualStatus, responseJSON);
+    this.statusCodeValidator(actualStatus, statusCode, this.postRequest);
+
     return responseJSON;
   }
-  
+
   async putRequest(statusCode: number) {
     const url = this.getUrl();
+    this.logger.logRequest('PUT', url, this.apiHeaders, this.apiBody);
     const response = await this.request.put(url, {
       headers: this.apiHeaders,
       data: this.apiBody,
     });
-  
-    expect(response.status()).toEqual(statusCode);
+    const actualStatus = response.status();
     const responseJSON = await response.json();
-  
+    this.logger.logResponse(actualStatus, responseJSON);
+    this.statusCodeValidator(actualStatus, statusCode, this.putRequest);
+
     return responseJSON;
   }
 
   async deleteRequest(statusCode: number) {
     const url = this.getUrl();
+    this.logger.logRequest('DELETE', url, this.apiHeaders);
     const response = await this.request.delete(url, {
       headers: this.apiHeaders,
     });
-  
-    expect(response.status()).toEqual(statusCode);
+    const actualStatus = response.status();
+    this.logger.logResponse(actualStatus);
+    this.statusCodeValidator(actualStatus, statusCode, this.deleteRequest);
   }
-  
+
   private getUrl() {
     const url = new URL(`${this.baseUrl ?? this.defaultBaseUrl}${this.apiPath}`);
     for (const [key, value] of Object.entries(this.queryParams)) {
       url.searchParams.append(key, value as any);
     }
     return url.toString();
+  }
+
+  private statusCodeValidator(actualStatus: number, expectedStatus: number, callingMethod: Function) {
+    if (actualStatus !== expectedStatus) {
+      const logs = this.logger.getRecentLogs();
+      const error = new Error(
+        `Expected status code ${expectedStatus} but got ${actualStatus}\n\nRecent API Activity: \n${logs}`
+      );
+      Error.captureStackTrace(error, callingMethod);
+      throw error;
+    }
   }
 }
