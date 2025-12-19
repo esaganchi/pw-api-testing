@@ -12,7 +12,7 @@ test.beforeAll('Authenticate user before all tests', async ({ api, config }) => 
     //     .path('/users/login')
     //     .body({ user: { email: config.userEmail, password: config.userPassword } })
     //     .postRequest(200)
-    authToken = await createToken(api, config.userEmail, config.userPassword);
+    authToken = await createToken(config.userEmail, config.userPassword);
 });
 
 test('Get Articles', async ({ api }) => {
