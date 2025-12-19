@@ -6,13 +6,13 @@ import { expect as customExpect } from '../utils/customExpect';
 // Общие переменные для всех тестов
 let authToken: string;
 
-test.beforeAll('Authenticate user before all tests', async ({ api }) => {
+test.beforeAll('Authenticate user before all tests', async ({ api, config }) => {
     const tokenResponse = await api
         .path('/users/login')
-        .body({ user: { email: 'saga1993@gmail.com', password: 'saga1993'} })
+        .body({ user: { email: config.userEmail, password: config.userPassword } })
         .postRequest(200)
-
     authToken = `Token ${tokenResponse.user.token}`;
+    console.log(tokenResponse.user)
 });
 
 test('Get Articles', async ({ api }) => {
