@@ -2,17 +2,17 @@ import { test } from '../utils/fixtures';
 import { expect } from '@playwright/test';
 import { APILogger } from '../utils/logger';
 import { expect as customExpect } from '../utils/customExpect';
+import { createToken } from '../helpers/createToken';
 
 // Общие переменные для всех тестов
 let authToken: string;
 
 test.beforeAll('Authenticate user before all tests', async ({ api, config }) => {
-    const tokenResponse = await api
-        .path('/users/login')
-        .body({ user: { email: config.userEmail, password: config.userPassword } })
-        .postRequest(200)
-    authToken = `Token ${tokenResponse.user.token}`;
-    console.log(tokenResponse.user)
+    // const tokenResponse = await api
+    //     .path('/users/login')
+    //     .body({ user: { email: config.userEmail, password: config.userPassword } })
+    //     .postRequest(200)
+    authToken = await createToken(api, config.userEmail, config.userPassword);
 });
 
 test('Get Articles', async ({ api }) => {
