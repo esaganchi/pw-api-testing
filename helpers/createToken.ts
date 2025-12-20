@@ -14,7 +14,7 @@ export async function createToken( email: string, password: string) {
         .path('/users/login')
         .body({ user: { email: email, password: password } })
         .postRequest(200);
-    return `Token ${tokenResponse.user.token}`;
+    return tokenResponse.user.token;
     } catch(error) {
         Error.captureStackTrace(error, createToken)
         throw error

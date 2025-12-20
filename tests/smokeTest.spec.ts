@@ -1,33 +1,22 @@
 import { test } from '../utils/fixtures';
 import { expect } from '@playwright/test';
-import { APILogger } from '../utils/logger';
 import { expect as customExpect } from '../utils/customExpect';
-import { createToken } from '../helpers/createToken';
-
-// Общие переменные для всех тестов
-let authToken: string;
-
-test.beforeAll('Authenticate user before all tests', async ({ api, config }) => {
-    // const tokenResponse = await api
-    //     .path('/users/login')
-    //     .body({ user: { email: config.userEmail, password: config.userPassword } })
-    //     .postRequest(200)
-    authToken = await createToken(config.userEmail, config.userPassword);
-});
 
 test('Get Articles', async ({ api }) => {
   const response = await api
     .path('/articles')
     .params({ limit: 10, offset: 0 })
+    .clearAuth()
     .getRequest(200);
 
   expect(response.articles.length).shouldBeLessThanOrEqual(10);
-  customExpect(response.articlesCount).shouldEqual(10);
+  customExpect(response.articles.length).shouldEqual(10);
 });
 
 test('Get Test Tags', async ({ api }) => {
   const response = await api
     .path('/tags')
+    .clearAuth()
     .getRequest(200);
 
   expect(response.tags[0]).toEqual('Test');
@@ -37,7 +26,6 @@ test('Get Test Tags', async ({ api }) => {
 test('Create and Delete Article', async ({ api }) => {
     const createArticleResponse = await api
         .path('/articles')
-        .headers({ 'Authorization': authToken })
         .body({ 
             article: { 
                 title: 'Test TWO Test',
@@ -52,19 +40,16 @@ test('Create and Delete Article', async ({ api }) => {
 
     const articleResponse = await api
         .path('/articles/')
-        .headers({ 'Authorization': authToken })
         .params({limit: 10, offset: 0})
         .getRequest(200);
     customExpect(articleResponse.articles[0].title).shouldEqual('Test TWO Test');
 
     await api
         .path(`/articles/${slug}`)
-        .headers({ 'Authorization': authToken })
         .deleteRequest(204);
 
     const articleResponseAfter = await api
         .path('/articles/')
-        .headers({ 'Authorization': authToken })
         .params({limit: 10, offset: 0})
         .getRequest(200);
     customExpect(articleResponseAfter.articles[0].title).not.shouldEqual('Test TWO Test');
@@ -74,7 +59,6 @@ test('Create and Delete Article', async ({ api }) => {
 test('Create, Update and Delete Article', async ({ api }) => {
     const createArticleResponse = await api
         .path('/articles')
-        .headers({ 'Authorization': authToken })
         .body({ 
             article: { 
                 title: 'Test Three Test',
@@ -89,7 +73,6 @@ test('Create, Update and Delete Article', async ({ api }) => {
 
     const updateArticleResponse = await api
         .path(`/articles/${slug}`)
-        .headers({ 'Authorization': authToken })
         .body({ 
             article: { 
                 title: 'Test Three Test Updated',
@@ -101,19 +84,16 @@ test('Create, Update and Delete Article', async ({ api }) => {
 
     const articleResponse = await api
         .path('/articles/')
-        .headers({ 'Authorization': authToken })
         .params({limit: 10, offset: 0})
         .getRequest(200);
     customExpect(articleResponse.articles[0].title).shouldEqual('Test Three Test Updated');
 
     await api
         .path(`/articles/${slugUpdated}`)
-        .headers({ 'Authorization': authToken })
         .deleteRequest(204);
 
     const articleResponseAfter = await api
         .path('/articles/')
-        .headers({ 'Authorization': authToken })
         .params({limit: 10, offset: 0})
         .getRequest(200);
     customExpect(articleResponseAfter.articles[0].title).not.shouldEqual('Test Three Test Updated');
