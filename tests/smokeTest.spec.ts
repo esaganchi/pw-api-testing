@@ -1,27 +1,28 @@
 import { test } from '../utils/fixtures';
 import { expect } from '@playwright/test';
 import { expect as customExpect } from '../utils/customExpect';
+import { validateSchema } from '../utils/schema-validator';
 
 test('Get Articles', async ({ api }) => {
   const response = await api
     .path('/articles')
     .params({ limit: 10, offset: 0 })
     .clearAuth()
-    .getRequest(200);
-
+    .getRequest(200);  
   expect(response.articles.length).shouldBeLessThanOrEqual(10);
   customExpect(response.articles.length).shouldEqual(10);
 });
 
 test('Get Test Tags', async ({ api }) => {
-  const response = await api
-    .path('/tags')
-    .clearAuth()
-    .getRequest(200);
-
-  expect(response.tags[0]).toEqual('Test');
-  expect(response.tags.length).shouldBeLessThanOrEqual(10);
-});
+    const response = await api
+      .path('/tags')
+      .getRequest(200);
+    await validateSchema('tags', 'GET_tags');
+  
+    expect(response.tags[0]).shouldEqual('test, automation');
+    expect(response.tags.length).shouldBeLessThanOrEqual(10);
+  });
+  
 
 test('Create and Delete Article', async ({ api }) => {
     const uniqueTitle = `Test TWO Test ${Date.now()}`;

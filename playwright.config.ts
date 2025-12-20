@@ -22,12 +22,12 @@ export default defineConfig({
     projects: [
         {
             name: 'api-testing',
-            testMatch: 'example*',
+            testMatch: '**/example*.spec.ts',
             dependencies: ['smoke-tests'],
         },
         {
             name: 'smoke-tests',
-            testMatch: 'smoke*',
+            testMatch: '**/smoke*.spec.ts',
         },
 
 
