@@ -24,25 +24,26 @@ test('Get Test Tags', async ({ api }) => {
 });
 
 test('Create and Delete Article', async ({ api }) => {
+    const uniqueTitle = `Test TWO Test ${Date.now()}`;
     const createArticleResponse = await api
         .path('/articles')
         .body({ 
             article: { 
-                title: 'Test TWO Test',
+                title: uniqueTitle,
                 description: 'Test TWO Description', 
                 body: 'Test TWO Body',
                 tagList: ['Test TWO']
             } 
         })
         .postRequest(201);
-    customExpect(createArticleResponse.article.title).shouldEqual('Test TWO Test');
+    customExpect(createArticleResponse.article.title).shouldEqual(uniqueTitle);
     const slug = createArticleResponse.article.slug;
 
+    // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
     const articleResponse = await api
-        .path('/articles/')
-        .params({limit: 10, offset: 0})
+        .path(`/articles/${slug}`)
         .getRequest(200);
-    customExpect(articleResponse.articles[0].title).shouldEqual('Test TWO Test');
+    customExpect(articleResponse.article.title).shouldEqual(uniqueTitle);
 
     await api
         .path(`/articles/${slug}`)
@@ -52,41 +53,43 @@ test('Create and Delete Article', async ({ api }) => {
         .path('/articles/')
         .params({limit: 10, offset: 0})
         .getRequest(200);
-    customExpect(articleResponseAfter.articles[0].title).not.shouldEqual('Test TWO Test');
+    customExpect(articleResponseAfter.articles[0].title).not.shouldEqual(uniqueTitle);
 });
 
 
 test('Create, Update and Delete Article', async ({ api }) => {
+    const uniqueTitle = `Test Three Test ${Date.now()}`;
+    const updatedTitle = `Test Three Test Updated ${Date.now()}`;
     const createArticleResponse = await api
         .path('/articles')
         .body({ 
             article: { 
-                title: 'Test Three Test',
+                title: uniqueTitle,
                 description: 'Test TWO Description', 
                 body: 'Test TWO Body',
                 tagList: ['Test TWO']
             } 
         })
         .postRequest(201);
-    customExpect(createArticleResponse.article.title).shouldEqual('Test Three Test');
+    customExpect(createArticleResponse.article.title).shouldEqual(uniqueTitle);
     const slug = createArticleResponse.article.slug;
 
     const updateArticleResponse = await api
         .path(`/articles/${slug}`)
         .body({ 
             article: { 
-                title: 'Test Three Test Updated',
+                title: updatedTitle,
             } 
         })
         .putRequest(200);
-    customExpect(updateArticleResponse.article.title).shouldEqual('Test Three Test Updated');
+    customExpect(updateArticleResponse.article.title).shouldEqual(updatedTitle);
     const slugUpdated = updateArticleResponse.article.slug;
 
+    // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
     const articleResponse = await api
-        .path('/articles/')
-        .params({limit: 10, offset: 0})
+        .path(`/articles/${slugUpdated}`)
         .getRequest(200);
-    customExpect(articleResponse.articles[0].title).shouldEqual('Test Three Test Updated');
+    customExpect(articleResponse.article.title).shouldEqual(updatedTitle);
 
     await api
         .path(`/articles/${slugUpdated}`)
@@ -96,7 +99,7 @@ test('Create, Update and Delete Article', async ({ api }) => {
         .path('/articles/')
         .params({limit: 10, offset: 0})
         .getRequest(200);
-    customExpect(articleResponseAfter.articles[0].title).not.shouldEqual('Test Three Test Updated');
+    customExpect(articleResponseAfter.articles[0].title).not.shouldEqual(updatedTitle);
 });
 
 

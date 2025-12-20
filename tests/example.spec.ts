@@ -66,14 +66,15 @@ test.describe('Article Management with Authentication', () => {
 
         const slugID = (await newArticleResponse.json()).article.slug;
 
-        const articleResponseGET = await request.get('https://conduit-api.bondaracademy.com/api/articles/?limit=10&offset=0', {
+        // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
+        const articleResponseGET = await request.get(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
             headers: {
                 Authorization: authToken,
             },
         });
         const ArticleResponseJSON = await articleResponseGET.json();
         expect(articleResponseGET.status()).toEqual(200);
-        expect(ArticleResponseJSON.articles[0].title).toEqual(uniqueTitle);
+        expect(ArticleResponseJSON.article.title).toEqual(uniqueTitle);
 
         const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
             headers: {
@@ -126,14 +127,15 @@ test.describe('Article Management with Authentication', () => {
         const updatedSlugID = updateArticleResponseJSON.article.slug;
         expect(updatedSlugID).toBeDefined();
 
-        const articleResponseGET = await request.get('https://conduit-api.bondaracademy.com/api/articles/?limit=10&offset=0', {
+        // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
+        const articleResponseGET = await request.get(`https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`, {
             headers: {
                 Authorization: authToken,
             },
         });
         const ArticleResponseJSON = await articleResponseGET.json();
         expect(articleResponseGET.status()).toEqual(200);
-        expect(ArticleResponseJSON.articles[0].title).toEqual(updatedTitle);
+        expect(ArticleResponseJSON.article.title).toEqual(updatedTitle);
 
         // Используем обновленный slug для удаления статьи
         const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`, {

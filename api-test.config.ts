@@ -13,8 +13,8 @@ if (env === 'qa') {
     config.userPassword = 'Welcome2'
 }
 if (env === 'prod') {
-    config.userEmail = '',
-    config.userPassword = ''
+    config.userEmail = 'saga1993@gmail.com',
+    config.userPassword = 'saga1993'
 }
 
 export {config};

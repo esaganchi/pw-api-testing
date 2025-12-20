@@ -16,7 +16,10 @@ export type WorkerFixture = {
 
 export const test = base.extend<TestOptions, WorkerFixture>({
   authToken: [async ({}, use) => {
-    const authToken = await createToken(config.userEmail, config.userPassword);
+    let authToken = '';
+    if (config.userEmail && config.userPassword) {
+      authToken = await createToken(config.userEmail, config.userPassword);
+    }
     await use(authToken);
   }, { scope: 'worker' }],
 
