@@ -14,10 +14,10 @@ export async function validateSchema(dirName: string, fileName: string, responce
 
     const valid = validate(responceBody)
     if (!valid) {
-        throw new Error(`Schems validation ${fileName}_schema.json failed:\n`+
+        throw new Error(`Schema validation ${fileName}_schema.json failed:\n`+
         `${JSON.stringify(validate.errors, null, 4)}\n\n` + 
         `Actual response body:\n` + 
-        `JSON.stringify(responceBody, null, 4)\n\n`
+        `${JSON.stringify(responceBody, null, 4)}\n\n`
         );
     }
     }
