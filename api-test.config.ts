@@ -19,7 +19,7 @@ if (env === 'qa') {
 }
 
 if (env === 'prod') {
-  config.userEmail = (process.env.USER_EMAIL || 'saga1999@gmail.com') as string;
+  config.userEmail = (process.env.USER_EMAIL || 'saga1993@gmail.com') as string;
   config.userPassword = (process.env.USER_PASSWORD || 'saga1993') as string;
 }
 
