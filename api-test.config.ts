@@ -1,15 +1,25 @@
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 const processENV = process.env.TEST_ENV;
 const env = processENV || 'prod';
 console.log('Test environment is: ' + env);
 
 const config = {
-    apiUrl: 'https://conduit-api.bondaracademy.com/api',
-    userEmail: 'saga1993@gmail.com',
-    userPassword: 'saga1993',
+  apiUrl: 'https://conduit-api.bondaracademy.com/api',
+  userEmail: 'pwapuiuser@test.com',
+  userPassword: 'Welcome'
 };
 
 if (env === 'qa') {
-    ((config.userEmail = 'pwtest@test.com'), (config.userPassword = 'Welcome2'));
+  config.userEmail = 'pwtest@test.com';
+  config.userPassword = 'Welcome2';
+}
+
+if (env === 'prod') {
+  config.userEmail = process.env.USER_EMAIL as string;
+  config.userPassword = process.env.USER_PASSWORD as string;
 }
 
 export { config };
