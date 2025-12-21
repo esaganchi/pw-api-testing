@@ -1,14 +1,17 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Ajv from 'ajv';
+import {createSchema} from 'genson-js';
 
 const SCHEMA_BASE_PATH = 'response-schemas';
 const ajv = new Ajv({ allErrors: true });
 
 
-export async function validateSchema(dirName: string, fileName: string, responceBody: object) {
-
+export async function validateSchema(dirName: string, fileName: string, responceBody: object, createSchemaFlag: boolean = false) {
     const schemaPath = path.join(SCHEMA_BASE_PATH, dirName, `${fileName}_schema.json`);
+
+    if (createSchemaFlag) await generateNewSchema(responceBody, schemaPath);
+
     const schema = await loadSchema(schemaPath)
     const validate = ajv.compile(schema)
 
@@ -29,5 +32,15 @@ async function loadSchema(schemaPath: string) {
         return JSON.parse(schemaContent);
     } catch (error) {
         throw new Error(`Failed to read the schema file: ${error.message}`);
+    }
+}
+
+async function generateNewSchema(responceBody: object, schemaPath: string) {
+    try {
+        const generatedSchema = createSchema(responceBody);
+        await fs.mkdir(path.dirname(schemaPath), { recursive: true });
+        await fs.writeFile(schemaPath, JSON.stringify(generatedSchema, null, 4));
+    } catch (error) {
+        throw new Error(`Failed to create schema file: ${error.message}`);
     }
 }
