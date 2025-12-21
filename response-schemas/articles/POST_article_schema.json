@@ -41,7 +41,7 @@
                             "type": "string"
                         },
                         "bio": {
-                            "type": "string"
+                            "type": ["string", "null"]
                         },
                         "image": {
                             "type": "string"
@@ -50,7 +50,7 @@
                             "type": "boolean"
                         }
                     },
-                    "required": ["username", "bio", "image", "following"]
+                    "required": ["username", "image", "following"]
                 }
             },
             "required": [
