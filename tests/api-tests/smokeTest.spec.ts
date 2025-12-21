@@ -1,10 +1,10 @@
-import { test } from '../utils/fixtures';
+import { test } from '../../utils/fixtures';
 import { expect } from '@playwright/test';
-import { expect as customExpect } from '../utils/customExpect';
-import { validateSchema } from '../utils/schema-validator';
-import articleRequestPayload from '../request-objects/POST-article.json';
+import { expect as customExpect } from '../../utils/customExpect';
+import { validateSchema } from '../../utils/schema-validator';
+import articleRequestPayload from '../../request-objects/POST-article.json';
 import { faker } from '@faker-js/faker';
-import { getNewRandomArticle } from '../utils/data-generator';
+import { getNewRandomArticle } from '../../utils/data-generator';
 
 
 test('Get Articles', async ({ api }) => {
@@ -22,14 +22,11 @@ test('Get Test Tags', async ({ api }) => {
     const response = await api.path('/tags').getRequest(200);
     expect(response).shouldMatchSchema('tags', 'GET_tags');
     expect(response.tags[0]).shouldEqual('Test');
-    //expect(response.tags[0]).shouldEqual('test, automation');
     expect(response.tags.length).shouldBeLessThanOrEqual(10);
 });
 
 test('Create and Delete Article', async ({ api }) => {
-    // const articleTitle = faker.lorem.sentence(5);
-    // const articleRequest = JSON.parse(JSON.stringify(articleRequestPayload));
-    //articleRequest.article.title = articleTitle;
+
     const articleRequest = getNewRandomArticle();
     const createArticleResponse = await api
         .path('/articles')
@@ -38,7 +35,6 @@ test('Create and Delete Article', async ({ api }) => {
     await expect(createArticleResponse).shouldMatchSchema('articles', 'POST_article');    
     const slugId = createArticleResponse.article.slug;
 
-    //const articleTitleTwo = faker.lorem.sentence(5);
     const articlesResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
@@ -55,8 +51,6 @@ test('Create and Delete Article', async ({ api }) => {
 });
 
 test('Create, Update and Delete Article', async ({ api }) => {
-    // const articleTitle = faker.lorem.sentence(5);
-    // const updatedTitle = faker.lorem.sentence(5);  
     const articleRequest = getNewRandomArticle();
     const createArticleResponse = await api
         .path('/articles')
@@ -72,7 +66,6 @@ test('Create, Update and Delete Article', async ({ api }) => {
     customExpect(updateArticleResponse.article.title).shouldEqual(articleRequest.article.title);
     const slugUpdated = updateArticleResponse.article.slug;
 
-    // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
     const articleResponse = await api.path(`/articles/${slugUpdated}`).getRequest(200);
     customExpect(articleResponse.article.title).shouldEqual(articleRequest.article.title);
 

@@ -32,6 +32,14 @@ export default defineConfig({
         {
             name: 'smoke-tests',
             testMatch: '**/{smoke,negative}*.spec.ts',
+            testIgnore: '**/ui-tests/**',
+        },
+        {
+            name: 'ui-tests',
+            testMatch: '**/ui-tests/**/*.spec.ts',
+            use: {
+                baseURL: 'https://conduit.bondaracademy.com',
+            },
         },
     ],
 });
