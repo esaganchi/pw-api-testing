@@ -17,7 +17,11 @@ export default defineConfig({
     retries: process.env.CI ? 2 : 1,
     workers: 1,
     reporter: [['html'], ['list'], ['junit', { outputFile: 'test-results/junit.xml' }]],
-    use: {},
+    use: {
+        trace: 'on',
+        screenshot: 'only-on-failure',
+        video: 'retain-on-failure',
+    },
 
     projects: [
         {
