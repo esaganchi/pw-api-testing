@@ -4,24 +4,24 @@
 // Затем скопируйте эти настройки в ваш пользовательский файл keybindings.json
 
 [
-  {
-    "key": "cmd+shift+d",
-    "command": "workbench.view.debug"
-  },
-  {
-    "key": "cmd+shift+f10",
-    "command": "workbench.action.debug.stepOver"
-  },
-  {
-    "key": "cmd+shift+f11",
-    "command": "workbench.action.debug.stepInto"
-  },
-  {
-    "key": "cmd+shift+shift+f11",
-    "command": "workbench.action.debug.stepOut"
-  },
-  {
-    "key": "cmd+shift+f5",
-    "command": "workbench.action.debug.continue"
-  }
+    {
+        "key": "cmd+shift+d",
+        "command": "workbench.view.debug"
+    },
+    {
+        "key": "cmd+shift+f10",
+        "command": "workbench.action.debug.stepOver"
+    },
+    {
+        "key": "cmd+shift+f11",
+        "command": "workbench.action.debug.stepInto"
+    },
+    {
+        "key": "cmd+shift+shift+f11",
+        "command": "workbench.action.debug.stepOut"
+    },
+    {
+        "key": "cmd+shift+f5",
+        "command": "workbench.action.debug.continue"
+    }
 ]

@@ -1,56 +1,42 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "🔍 Debug Current Test (Step-by-step)",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "playwright",
-        "test",
-        "${relativeFile}",
-        "--workers=1"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
-      "stopOnEntry": false,
-      "sourceMaps": true
-    },
-    {
-      "name": "🔍 Debug All Tests (Step-by-step)",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "playwright",
-        "test",
-        "--workers=1"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
-      "stopOnEntry": false,
-      "sourceMaps": true
-    },
-    {
-      "name": "🎭 Playwright Inspector",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "playwright",
-        "test",
-        "${relativeFile}",
-        "--debug"
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"]
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "🔍 Debug Current Test (Step-by-step)",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": ["playwright", "test", "${relativeFile}", "--workers=1"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": ["<node_internals>/**"],
+            "stopOnEntry": false,
+            "sourceMaps": true
+        },
+        {
+            "name": "🔍 Debug All Tests (Step-by-step)",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": ["playwright", "test", "--workers=1"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": ["<node_internals>/**"],
+            "stopOnEntry": false,
+            "sourceMaps": true
+        },
+        {
+            "name": "🎭 Playwright Inspector",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": ["playwright", "test", "${relativeFile}", "--debug"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": ["<node_internals>/**"]
+        }
+    ]
 }

@@ -52,12 +52,11 @@
 //     expect(articlesResponseJSON.articlesCount).toEqual(10);
 // });
 
-
 // test.describe('Article Management with Authentication', () => {
 //     test('Create and Delete a Article', async ({ request }) => {
 //         const uniqueTitle = `Article Three ${Date.now()}`;
 
-//         const newArticleResponse = await request.post(API_URLS.ARTICLES, 
+//         const newArticleResponse = await request.post(API_URLS.ARTICLES,
 //             {
 //                 data: {
 //                     article: {
@@ -95,7 +94,7 @@
 //     test('Create, Update and Delete a Article', async ({ request }) => {
 //         const uniqueTitle = `Update Article ${Date.now()}`;
 
-//         const newArticleResponse = await request.post(API_URLS.ARTICLES, 
+//         const newArticleResponse = await request.post(API_URLS.ARTICLES,
 //             {
 //                 data: {
 //                     article: {

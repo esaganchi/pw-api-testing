@@ -1,7 +1,6 @@
 {
-  "editor.renderIndentGuides": true,
-  "editor.guides.indentation": true,
-  "editor.guides.highlightActiveIndentation": true,
-  "editor.guides.bracketPairs": true
+    "editor.renderIndentGuides": true,
+    "editor.guides.indentation": true,
+    "editor.guides.highlightActiveIndentation": true,
+    "editor.guides.bracketPairs": true
 }
-

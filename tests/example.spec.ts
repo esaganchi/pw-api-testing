@@ -4,14 +4,17 @@ import { test, expect } from '@playwright/test';
 let authToken: string;
 
 test.beforeAll('Authenticate user before all tests', async ({ request }) => {
-    const tokenResponse = await request.post('https://conduit-api.bondaracademy.com/api/users/login', {
-        data: {
-            user: {
-                email: 'saga1993@gmail.com',
-                password: 'saga1993',
+    const tokenResponse = await request.post(
+        'https://conduit-api.bondaracademy.com/api/users/login',
+        {
+            data: {
+                user: {
+                    email: 'saga1993@gmail.com',
+                    password: 'saga1993',
+                },
             },
-        },
-    });
+        }
+    );
 
     // Проверяем статус ответа логина
     expect(tokenResponse.status()).toBe(200);
@@ -24,7 +27,6 @@ test.beforeAll('Authenticate user before all tests', async ({ request }) => {
     authToken = `Token ${tokenResponseJSON.user.token}`;
 });
 
-
 test('Get Test Tags', async ({ request }) => {
     const tagsResponse = await request.get('https://conduit-api.bondaracademy.com/api/tags');
     const tagsResponseJSON = await tagsResponse.json();
@@ -35,7 +37,9 @@ test('Get Test Tags', async ({ request }) => {
 });
 
 test('Get All Articles', async ({ request }) => {
-    const articlesResponse = await request.get('https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0');
+    const articlesResponse = await request.get(
+        'https://conduit-api.bondaracademy.com/api/articles?limit=10&offset=0'
+    );
     const articlesResponseJSON = await articlesResponse.json();
 
     expect(articlesResponse.status()).toEqual(200);
@@ -43,12 +47,12 @@ test('Get All Articles', async ({ request }) => {
     expect(articlesResponseJSON.articlesCount).toEqual(10);
 });
 
-
 test.describe('Article Management with Authentication', () => {
     test('Create and Delete a Article', async ({ request }) => {
         const uniqueTitle = `Article Three ${Date.now()}`;
 
-        const newArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles', 
+        const newArticleResponse = await request.post(
+            'https://conduit-api.bondaracademy.com/api/articles',
             {
                 data: {
                     article: {
@@ -67,27 +71,34 @@ test.describe('Article Management with Authentication', () => {
         const slugID = (await newArticleResponse.json()).article.slug;
 
         // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
-        const articleResponseGET = await request.get(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
-            headers: {
-                Authorization: authToken,
-            },
-        });
+        const articleResponseGET = await request.get(
+            `https://conduit-api.bondaracademy.com/api/articles/${slugID}`,
+            {
+                headers: {
+                    Authorization: authToken,
+                },
+            }
+        );
         const ArticleResponseJSON = await articleResponseGET.json();
         expect(articleResponseGET.status()).toEqual(200);
         expect(ArticleResponseJSON.article.title).toEqual(uniqueTitle);
 
-        const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
-            headers: {
-                Authorization: authToken,
-            },
-        });
+        const deleteArticleResponse = await request.delete(
+            `https://conduit-api.bondaracademy.com/api/articles/${slugID}`,
+            {
+                headers: {
+                    Authorization: authToken,
+                },
+            }
+        );
         expect(deleteArticleResponse.status()).toEqual(204);
     });
 
     test('Create, Update and Delete a Article', async ({ request }) => {
         const uniqueTitle = `Update Article ${Date.now()}`;
 
-        const newArticleResponse = await request.post('https://conduit-api.bondaracademy.com/api/articles', 
+        const newArticleResponse = await request.post(
+            'https://conduit-api.bondaracademy.com/api/articles',
             {
                 data: {
                     article: {
@@ -106,19 +117,22 @@ test.describe('Article Management with Authentication', () => {
         const slugID = (await newArticleResponse.json()).article.slug;
 
         const updatedTitle = `Updated Article ${Date.now()}`;
-        const updateArticleResponse = await request.put(`https://conduit-api.bondaracademy.com/api/articles/${slugID}`, {
-            data: {
-                article: {
-                    title: updatedTitle,
-                    description: 'Test Update Description Four Saganchi',
-                    body: 'Test Update Body Four Saganchi',
-                    tagList: ['Test7', 'Test8', 'Test9'],
+        const updateArticleResponse = await request.put(
+            `https://conduit-api.bondaracademy.com/api/articles/${slugID}`,
+            {
+                data: {
+                    article: {
+                        title: updatedTitle,
+                        description: 'Test Update Description Four Saganchi',
+                        body: 'Test Update Body Four Saganchi',
+                        tagList: ['Test7', 'Test8', 'Test9'],
+                    },
                 },
-            },
-            headers: {
-                Authorization: authToken,
-            },
-        });
+                headers: {
+                    Authorization: authToken,
+                },
+            }
+        );
         expect(updateArticleResponse.status()).toEqual(200);
         const updateArticleResponseJSON = await updateArticleResponse.json();
         expect(updateArticleResponseJSON.article.title).toEqual(updatedTitle);
@@ -128,21 +142,27 @@ test.describe('Article Management with Authentication', () => {
         expect(updatedSlugID).toBeDefined();
 
         // Получаем конкретную статью по slug вместо списка, чтобы избежать проблем с параллельными тестами
-        const articleResponseGET = await request.get(`https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`, {
-            headers: {
-                Authorization: authToken,
-            },
-        });
+        const articleResponseGET = await request.get(
+            `https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`,
+            {
+                headers: {
+                    Authorization: authToken,
+                },
+            }
+        );
         const ArticleResponseJSON = await articleResponseGET.json();
         expect(articleResponseGET.status()).toEqual(200);
         expect(ArticleResponseJSON.article.title).toEqual(updatedTitle);
 
         // Используем обновленный slug для удаления статьи
-        const deleteArticleResponse = await request.delete(`https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`, {
-            headers: {
-                Authorization: authToken,
-            },
-        });
+        const deleteArticleResponse = await request.delete(
+            `https://conduit-api.bondaracademy.com/api/articles/${updatedSlugID}`,
+            {
+                headers: {
+                    Authorization: authToken,
+                },
+            }
+        );
         expect(deleteArticleResponse.status()).toEqual(204);
     });
 });

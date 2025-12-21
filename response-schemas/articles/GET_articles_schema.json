@@ -52,12 +52,7 @@
                                 "type": "boolean"
                             }
                         },
-                        "required": [
-                            "username",
-                            "bio",
-                            "image",
-                            "following"
-                        ]
+                        "required": ["username", "bio", "image", "following"]
                     }
                 },
                 "required": [
@@ -78,8 +73,5 @@
             "type": "integer"
         }
     },
-    "required": [
-        "articles",
-        "articlesCount"
-    ]
+    "required": ["articles", "articlesCount"]
 }

@@ -16,7 +16,7 @@ export default defineConfig({
     fullyParallel: true,
     retries: process.env.CI ? 2 : 1,
     workers: 1,
-    reporter: [['html'],['list'],['junit', { outputFile: 'test-results/junit.xml' }]],
+    reporter: [['html'], ['list'], ['junit', { outputFile: 'test-results/junit.xml' }]],
     use: {},
 
     projects: [
@@ -29,8 +29,5 @@ export default defineConfig({
             name: 'smoke-tests',
             testMatch: '**/smoke*.spec.ts',
         },
-
-
     ],
-
 });

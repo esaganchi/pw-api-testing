@@ -1,32 +1,36 @@
 import fs from 'fs/promises';
 import path from 'path';
 import Ajv from 'ajv';
-import {createSchema} from 'genson-js';
+import { createSchema } from 'genson-js';
 import addFormats from 'ajv-formats';
 
 const SCHEMA_BASE_PATH = 'response-schemas';
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
 
-
-export async function validateSchema(dirName: string, fileName: string, responceBody: object, createSchemaFlag: boolean = false) {
+export async function validateSchema(
+    dirName: string,
+    fileName: string,
+    responceBody: object,
+    createSchemaFlag: boolean = false
+) {
     const schemaPath = path.join(SCHEMA_BASE_PATH, dirName, `${fileName}_schema.json`);
 
     if (createSchemaFlag) await generateNewSchema(responceBody, schemaPath);
 
-    const schema = await loadSchema(schemaPath)
-    const validate = ajv.compile(schema)
+    const schema = await loadSchema(schemaPath);
+    const validate = ajv.compile(schema);
 
-    const valid = validate(responceBody)
+    const valid = validate(responceBody);
     if (!valid) {
-        throw new Error(`Schema validation ${fileName}_schema.json failed:\n`+
-        `${JSON.stringify(validate.errors, null, 4)}\n\n` + 
-        `Actual response body:\n` + 
-        `${JSON.stringify(responceBody, null, 4)}\n\n`
+        throw new Error(
+            `Schema validation ${fileName}_schema.json failed:\n` +
+                `${JSON.stringify(validate.errors, null, 4)}\n\n` +
+                `Actual response body:\n` +
+                `${JSON.stringify(responceBody, null, 4)}\n\n`
         );
     }
-    }
-
+}
 
 async function loadSchema(schemaPath: string) {
     try {
