@@ -27,7 +27,7 @@ export default defineConfig({
         },
         {
             name: 'smoke-tests',
-            testMatch: '**/smoke*.spec.ts',
+            testMatch: '**/{smoke,negative}*.spec.ts',
         },
     ],
 });
