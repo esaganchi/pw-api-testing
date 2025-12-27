@@ -8,5 +8,7 @@
             }
         }
     },
-    "required": ["tags"]
+    "required": [
+        "tags"
+    ]
 }
