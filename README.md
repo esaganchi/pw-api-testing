@@ -1,10 +1,64 @@
 # Playwright API and UI Testing Framework
 
-Automated testing project for API and user interface of Conduit application (Bondar Academy) using Playwright and TypeScript.
+Automated testing framework for API and UI of Conduit application (Bondar Academy) using Playwright and TypeScript.
 
-## Project Description
+## Table of Contents
 
-This project contains automated tests to check API and UI functionality of a web application. The project supports testing REST API endpoints and user interface through browser automation.
+- [Project Overview](#project-overview)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Running Tests](#running-tests)
+- [Framework Architecture](#framework-architecture)
+- [Components](#components)
+- [Additional Resources](#additional-resources)
+
+## Project Overview
+
+This project provides automated testing for REST API endpoints and user interface of a web application. It uses a modular architecture with reusable components, custom fixtures, and automatic validation.
+
+**Key Features:**
+- REST API testing with automatic authentication
+- UI testing with browser automation
+- JSON schema validation
+- Custom assertions with logging
+- Support for multiple environments
+- Fluent API for building requests
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Install Playwright browsers
+npx playwright install --with-deps
+```
+
+### Environment Setup
+
+Create a `.env` file in the project root (optional, only for `prod` environment):
+
+```env
+USER_EMAIL=your_email@example.com
+USER_PASSWORD=your_password
+TEST_ENV=prod
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+npx playwright test
+
+# Run specific project
+npx playwright test --project=smoke-tests
+
+# Run in UI mode
+npx playwright test --ui
+```
 
 ## Project Structure
 
@@ -41,63 +95,39 @@ pw-api-testing/
 └── package.json            # Project dependencies
 ```
 
-## Installation and Setup
-
-### Requirements
-
-- Node.js (LTS version)
-- npm or yarn
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Install Playwright Browsers
-
-```bash
-npx playwright install --with-deps
-```
-
-### Environment Variables Setup
-
-Create a `.env` file in the project root (if you need to override default values):
-
-```env
-USER_EMAIL=your_email@example.com
-USER_PASSWORD=your_password
-TEST_ENV=prod
-```
-
-Environment variables are used only for `prod` environment. For other environments, values from `api-test.config.ts` are used.
-
 ## Configuration
 
 ### Main Configuration
 
-The `api-test.config.ts` file contains the main project configuration:
-
+The `api-test.config.ts` file contains:
 - **API URL**: `https://conduit-api.bondaracademy.com/api`
 - **UI URL**: `https://conduit.bondaracademy.com`
-- **Credentials**: depend on environment (prod/qa/default)
+- **Credentials**: environment-specific values
 
 ### Environments
 
-The project supports several environments, defined by `TEST_ENV` variable:
-
+Supported environments (defined by `TEST_ENV` variable):
 - **default**: uses default values from configuration
 - **qa**: uses QA environment values from configuration
-- **prod**: from environment variables or default values from configuration
+- **prod**: uses environment variables (`.env`) or default values
+
+### Credentials
+
+Credentials are stored in:
+1. `api-test.config.ts` - main credentials for different environments
+2. `config/test-data.config.ts` - additional test data
+3. `.env` file - environment variables for prod (USER_EMAIL, USER_PASSWORD)
+
+For prod environment, credentials are taken from environment variables or default values from `api-test.config.ts`.
 
 ### Playwright Configuration
 
-The `playwright.config.ts` file defines:
-
-- **Test Projects**: separation into `smoke-tests`, `api-testing`, `ui-tests`
+The `playwright.config.ts` defines:
+- **Test Projects**: `smoke-tests`, `api-testing`, `ui-tests`
 - **Trace**: enabled for all tests
 - **Screenshots**: created when tests fail
 - **Video**: recorded when tests fail
+- **Reporters**: HTML, list, and JUnit XML
 
 ## Running Tests
 
@@ -110,13 +140,13 @@ npx playwright test
 ### Run Specific Project
 
 ```bash
-# Only smoke tests
+# Smoke tests (basic functionality)
 npx playwright test --project=smoke-tests
 
-# Only API tests
+# Extended API tests
 npx playwright test --project=api-testing
 
-# Only UI tests
+# UI tests
 npx playwright test --project=ui-tests
 ```
 
@@ -138,191 +168,49 @@ npx playwright test --ui
 npx playwright test --debug
 ```
 
-## Viewing Reports
-
-### HTML Report
+### View Reports
 
 ```bash
+# HTML report
 npx playwright show-report
-```
 
-### View Trace
-
-```bash
+# View trace
 npx playwright show-trace path/to/trace.zip
 ```
 
-## Test Types
-
-### API Tests
-
-API tests use a custom fixture `api` from `utils/fixtures.ts`, which provides:
-
-- **RequestHandler**: wrapper for HTTP requests with automatic authentication
-- **Automatic Token**: token is created automatically before running tests
-- **Logging**: all API requests are logged
-
-Example usage:
-
-```typescript
-import { test } from '../utils/fixtures';
-
-test('Get Articles', async ({ api }) => {
-    const response = await api
-        .path('/articles')
-        .params({ limit: 10, offset: 0 })
-        .clearAuth()
-        .getRequest(200);
-});
-```
-
-### UI Tests
-
-UI tests use standard Playwright fixtures (`page`, `request`) and work with the browser:
-
-```typescript
-import { test, expect } from '@playwright/test';
-import { config } from '../../api-test.config';
-
-test('create article', async ({ page }) => {
-    await page.goto('/');
-    // ... UI interaction
-});
-```
-
-## Main Components
-
-### RequestHandler
-
-Class in `utils/request-handler.ts` to simplify working with API requests:
-
-- Methods: `getRequest()`, `postRequest()`, `putRequest()`, `deleteRequest()`
-- Method chains: `.path()`, `.body()`, `.params()`, `.clearAuth()`
-- Automatic response handling
-
-### Schema Validator
-
-API response validation using JSON schemas from `response-schemas/`:
-
-```typescript
-await expect(response).shouldMatchSchema('articles', 'GET_articles');
-```
-
-### Custom Expectations
-
-Custom assertions in `utils/customExpect.ts`:
-
-- `shouldEqual()`: comparison with logging
-- `shouldMatchSchema()`: schema validation
-
-### Logger
-
-Logging API requests and responses through `utils/logger.ts`.
-
-## Credentials
-
-Credentials are stored in the following places:
-
-1. **api-test.config.ts**: main credentials for different environments
-2. **config/test-data.config.ts**: additional test data
-3. **.env file**: environment variables for prod (USER_EMAIL, USER_PASSWORD)
-
-For prod environment, credentials are taken from environment variables (USER_EMAIL, USER_PASSWORD) or default values specified in `api-test.config.ts` are used.
-
-## Code Formatting
-
-Check formatting:
-
-```bash
-npm run format:check
-```
-
-Auto format:
-
-```bash
-npm run format
-```
-
-## Test Project Structure
-
-### smoke-tests
-
-Basic tests to check main functionality:
-- Pattern: `**/{smoke,negative}*.spec.ts`
-- Excludes: `**/ui-tests/**`
-
-### api-testing
-
-Extended API tests:
-- Pattern: `**/example*.spec.ts`
-- Depends on: `smoke-tests`
-
-### ui-tests
-
-User interface tests:
-- Pattern: `**/ui-tests/**/*.spec.ts`
-- baseURL: `https://conduit.bondaracademy.com`
-
-## Reporting
-
-The project is configured to generate several types of reports:
-
-- **HTML Report**: interactive report with test results
-- **JUnit XML**: for integration with CI/CD systems
-- **Trace**: for debugging failed tests
-- **Screenshots**: automatic screenshots when UI tests fail
-- **Video**: video recordings when tests fail
-
-## Additional Information
-
-For more information about configuration files, see `config/README.md`.
-
 ## Framework Architecture
-
-The framework uses a modular architecture with several layers. This helps reuse code and makes the framework easy to maintain and extend.
 
 ### Architecture Layers
 
 #### 1. Configuration Layer
-
-All project settings are stored in one place:
-
-- **api-test.config.ts**: main configuration (URLs, credentials, environments)
-- **config/api.config.ts**: API endpoint constants
-- **config/test-data.config.ts**: test data and data generation functions
+- `api-test.config.ts` - main configuration (URLs, credentials, environments)
+- `config/api.config.ts` - API endpoint constants
+- `config/test-data.config.ts` - test data and data generation functions
 
 #### 2. Utilities Layer (utils/)
-
-Reusable components for API and test work:
-
-- **request-handler.ts**: HTTP client with fluent API and automatic authentication
-- **fixtures.ts**: custom Playwright fixtures with automatic initialization
-- **customExpect.ts**: extended assertions with logging
-- **schema-validator.ts**: response validation using JSON schemas
-- **logger.ts**: centralized logging for API requests
-- **data-generator.ts**: test data generation
+- `request-handler.ts` - HTTP client with fluent API and automatic authentication
+- `fixtures.ts` - custom Playwright fixtures with automatic initialization
+- `customExpect.ts` - extended assertions with logging
+- `schema-validator.ts` - response validation using JSON schemas
+- `logger.ts` - centralized logging for API requests
+- `data-generator.ts` - test data generation
 
 #### 3. Helpers Layer (helpers/)
-
-- **createToken.ts**: gets authentication token
+- `createToken.ts` - authentication token creation
 
 #### 4. Data Layer
-
-- **request-objects/**: JSON templates for API requests
-- **response-schemas/**: JSON schemas for API response validation
+- `request-objects/` - JSON templates for API requests
+- `response-schemas/` - JSON schemas for API response validation
 
 #### 5. Tests Layer (tests/)
+- `smoke-tests` - basic functionality checks
+- `api-testing` - extended API tests (depends on smoke-tests)
+- `ui-tests` - user interface tests
 
-Tests are organized into projects with dependencies:
-- **smoke-tests**: basic functionality checks
-- **api-testing**: extended API tests (depends on smoke-tests)
-- **ui-tests**: user interface tests
-
-### Used Patterns
+### Design Patterns
 
 #### Builder Pattern (RequestHandler)
-
-Uses fluent API to build requests:
+Fluent API for building requests:
 
 ```typescript
 const response = await api
@@ -333,7 +221,6 @@ const response = await api
 ```
 
 #### Fixture Pattern
-
 Custom fixtures for reusing initialization logic:
 
 ```typescript
@@ -344,21 +231,12 @@ export const test = base.extend<TestOptions, WorkerFixture>({
 });
 ```
 
-#### Configuration Pattern
-
-All configurations are stored in one central place.
-
 #### Schema Validation Pattern
-
-Validates API responses using JSON schemas. Can also generate schemas automatically:
+Validates API responses using JSON schemas:
 
 ```typescript
 await expect(response).shouldMatchSchema('articles', 'GET_articles');
 ```
-
-#### Logger Pattern
-
-All API operations are logged in one place. This makes debugging easier.
 
 ### Test Execution Flow
 
@@ -379,7 +257,60 @@ All API operations are logged in one place. This makes debugging easier.
 - **Flexibility**: support for different environments (default/qa/prod)
 - **Type Safety**: TypeScript checks types automatically
 
-### Example Usage in a Test
+## Components
+
+### RequestHandler
+
+Class in `utils/request-handler.ts` for API requests:
+- Methods: `getRequest()`, `postRequest()`, `putRequest()`, `deleteRequest()`
+- Method chains: `.path()`, `.body()`, `.params()`, `.clearAuth()`
+- Automatic response handling and status code validation
+
+### Schema Validator
+
+API response validation using JSON schemas from `response-schemas/`:
+
+```typescript
+await expect(response).shouldMatchSchema('articles', 'GET_articles');
+```
+
+Schemas can be auto-generated by passing `true` as the third parameter:
+
+```typescript
+await expect(response).shouldMatchSchema('articles', 'GET_articles', true);
+```
+
+### Custom Expectations
+
+Custom assertions in `utils/customExpect.ts`:
+- `shouldEqual()`: comparison with logging
+- `shouldBeLessThanOrEqual()`: comparison with logging
+- `shouldMatchSchema()`: schema validation with optional auto-generation
+
+### Logger
+
+Logging API requests and responses through `utils/logger.ts`. All API operations are automatically logged for debugging.
+
+### Test Projects
+
+#### smoke-tests
+Basic tests to check main functionality:
+- Pattern: `**/{smoke,negative}*.spec.ts`
+- Excludes: `**/ui-tests/**`
+
+#### api-testing
+Extended API tests:
+- Pattern: `**/example*.spec.ts`
+- Depends on: `smoke-tests`
+
+#### ui-tests
+User interface tests:
+- Pattern: `**/ui-tests/**/*.spec.ts`
+- baseURL: `https://conduit.bondaracademy.com`
+
+### Example Usage
+
+#### API Test Example
 
 ```typescript
 import { test } from '../utils/fixtures';
@@ -406,9 +337,39 @@ test('Create and Delete Article', async ({ api }) => {
 });
 ```
 
-This example shows the main parts of the architecture:
-- Using custom fixture `api`
-- Fluent API for building requests
-- Automatic status code validation
-- JSON schema validation
-- Automatic logging of all operations
+#### UI Test Example
+
+```typescript
+import { test, expect } from '@playwright/test';
+import { config } from '../../api-test.config';
+
+test('create article', async ({ page }) => {
+    await page.goto('/');
+    // ... UI interaction
+});
+```
+
+## Additional Resources
+
+### Code Formatting
+
+```bash
+# Check formatting
+npm run format:check
+
+# Auto format
+npm run format
+```
+
+### Reporting
+
+The project generates several types of reports:
+- **HTML Report**: interactive report with test results
+- **JUnit XML**: for integration with CI/CD systems
+- **Trace**: for debugging failed tests
+- **Screenshots**: automatic screenshots when UI tests fail
+- **Video**: video recordings when tests fail
+
+### Additional Documentation
+
+For more information about configuration files, see `config/README.md`.
