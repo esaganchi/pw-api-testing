@@ -51,35 +51,85 @@ test('Get Articles', async ({ api }) => {
 test('Get Test Tags', async ({ api }) => {
     const response = await api.path('/tags').getRequest(200);
     expect(response).shouldMatchSchema('tags', 'GET_tags');
-    expect(response.tags[0]).shouldEqual('Test');
+    
+    // Check that tags array is not empty
+    expect(response.tags.length).toBeGreaterThan(0);
     expect(response.tags.length).shouldBeLessThanOrEqual(10);
+    
+    // Check that first tag is "Test"
+    expect(response.tags[0]).shouldEqual('Test');
+    
+    // Check that all tags are unique
+    const uniqueTags = new Set(response.tags);
+    customExpect(uniqueTags.size).shouldEqual(response.tags.length);
+    
+    // Validate each tag
+    response.tags.forEach((tag: string) => {
+        // Check that tag is not empty
+        expect(tag).toBeTruthy();
+        expect(tag.trim().length).toBeGreaterThan(0);
+        // Check that tag is a string (type validation is in schema, but we check it's not empty)
+        expect(typeof tag).toBe('string');
+    });
 });
 
 test('Create and Delete Article', async ({ api }) => {
-
     const articleRequest = getNewRandomArticle();
+    
+    // Create article
     const createArticleResponse = await api
         .path('/articles')
         .body(articleRequest)
         .postRequest(201);
-    await expect(createArticleResponse).shouldMatchSchema('articles', 'POST_article');    
+    await expect(createArticleResponse).shouldMatchSchema('articles', 'POST_article');
+    
+    // Verify created article matches request data
+    customExpect(createArticleResponse.article.title).shouldEqual(articleRequest.article.title);
+    customExpect(createArticleResponse.article.description).shouldEqual(articleRequest.article.description);
+    customExpect(createArticleResponse.article.body).shouldEqual(articleRequest.article.body);
+    expect(createArticleResponse.article.tagList).toEqual(articleRequest.article.tagList);
+    
+    // Verify slug was generated
+    expect(createArticleResponse.article.slug).toBeTruthy();
     const slugId = createArticleResponse.article.slug;
-
+    
+    // Verify dates are set
+    expect(createArticleResponse.article.createdAt).toBeTruthy();
+    expect(createArticleResponse.article.updatedAt).toBeTruthy();
+    expect(new Date(createArticleResponse.article.createdAt).getTime()).not.toBeNaN();
+    
+    // Get articles list and verify created article is present
     const articlesResponse = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200);
     await expect(articlesResponse).shouldMatchSchema('articles', 'GET_articles');
-    expect(articlesResponse.articles[0].title).shouldEqual(articleRequest.article.title);
-
+    
+    // Check that created article is in the list (should be first as newest)
+    const createdArticleInList = articlesResponse.articles.find((article: any) => article.slug === slugId);
+    expect(createdArticleInList).toBeDefined();
+    expect(articlesResponse.articles[0].slug).toBe(slugId);
+    customExpect(articlesResponse.articles[0].title).shouldEqual(articleRequest.article.title);
+    
+    const articlesCountBeforeDelete = articlesResponse.articlesCount;
+    
+    // Delete article
     await api.path(`/articles/${slugId}`).deleteRequest(204);
-
-    const articlesResponseTwo = await api
+    
+    // Verify article is deleted
+    const articlesResponseAfterDelete = await api
         .path('/articles')
         .params({ limit: 10, offset: 0 })
         .getRequest(200);
-    await expect(articlesResponseTwo).shouldMatchSchema('articles', 'GET_articles');
-    expect(articlesResponseTwo.articles[0].title).not.shouldEqual(articleRequest.article.title);
+    await expect(articlesResponseAfterDelete).shouldMatchSchema('articles', 'GET_articles');
+    
+    // Check that deleted article is not in the list
+    const deletedArticleInList = articlesResponseAfterDelete.articles.find((article: any) => article.slug === slugId);
+    expect(deletedArticleInList).toBeUndefined();
+    expect(articlesResponseAfterDelete.articles[0].title).not.toBe(articleRequest.article.title);
+    
+    // Check that articles count decreased
+    expect(articlesResponseAfterDelete.articlesCount).toBeLessThan(articlesCountBeforeDelete);
 });
 
 test('Create, Update and Delete Article', async ({ api }) => {
