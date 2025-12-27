@@ -13,9 +13,39 @@ test('Get Articles', async ({ api }) => {
         .params({ limit: 10, offset: 0 })
         .clearAuth()
         .getRequest(200);
+    
     await expect(response).shouldMatchSchema('articles', 'GET_articles');
-    expect(response.articles.length).shouldBeLessThanOrEqual(10);
     customExpect(response.articles.length).shouldEqual(10);
+    // Check that articles count matches the number of articles in the array
+    customExpect(response.articlesCount).shouldEqual(response.articles.length);
+
+    // Check that all slugs are unique
+    const slugs = response.articles.map((article: any) => article.slug);
+    customExpect(new Set(slugs).size).shouldEqual(slugs.length);
+
+    // Check that articles are sorted from newest to oldest
+    for (let i = 0; i < response.articles.length - 1; i++) {
+        expect(new Date(response.articles[i].createdAt).getTime())
+            .toBeGreaterThanOrEqual(new Date(response.articles[i + 1].createdAt).getTime());
+    }
+
+    // Validate each article
+    response.articles.forEach((article: any) => {
+        expect(article.slug).toBeTruthy();
+        expect(article.title).toBeTruthy();
+        expect(article.description).toBeTruthy();
+        expect(article.body).toBeTruthy();
+        expect(article.author.username).toBeTruthy();
+        // Check that slug ends with a number
+        expect(article.slug).toMatch(/-\d+$/);
+        // Check that slug contains dashes (words are separated by "-")
+        expect(article.slug.replace(/-\d+$/, '')).toContain('-');
+        expect(article.favoritesCount).toBeGreaterThanOrEqual(0);
+        // Check that updated date is not earlier than created date
+        expect(new Date(article.updatedAt).getTime())
+            .toBeGreaterThanOrEqual(new Date(article.createdAt).getTime());
+        expect(Array.isArray(article.tagList)).toBe(true);
+    });
 });
 
 test('Get Test Tags', async ({ api }) => {

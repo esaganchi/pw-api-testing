@@ -16,7 +16,7 @@ export default defineConfig({
     fullyParallel: true,
     retries: process.env.CI ? 2 : 1,
     workers: 1,
-    reporter: [['html'], ['list'], ['junit', { outputFile: 'test-results/junit.xml' }]],
+    reporter: [['html', { open: 'never' }], ['list'], ['junit', { outputFile: 'test-results/junit.xml' }]],
     use: {
         trace: 'on',
         screenshot: 'only-on-failure',
