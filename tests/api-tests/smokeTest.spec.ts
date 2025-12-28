@@ -13,8 +13,8 @@ test('Get Articles', async ({ api }) => {
         .params({ limit: 10, offset: 0 })
         .clearAuth()
         .getRequest(200);
-    
     await expect(response).shouldMatchSchema('articles', 'GET_articles');
+    
     customExpect(response.articles.length).shouldEqual(10);
     // Check that articles count matches the number of articles in the array
     customExpect(response.articlesCount).shouldEqual(response.articles.length);
@@ -50,7 +50,7 @@ test('Get Articles', async ({ api }) => {
 
 test('Get Test Tags', async ({ api }) => {
     const response = await api.path('/tags').getRequest(200);
-    expect(response).shouldMatchSchema('tags', 'GET_tags');
+    await expect(response).shouldMatchSchema('tags', 'GET_tags');
     
     // Check that tags array is not empty
     expect(response.tags.length).toBeGreaterThan(0);
